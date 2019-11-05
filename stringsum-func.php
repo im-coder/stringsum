@@ -2,7 +2,7 @@
 
 /**
  * Вариант сложения двух положительных целых чисел представленных в виде строк
- * без использования внутренних php функций
+ * с использованием внутренних php функций
  */
 
 /**
@@ -15,24 +15,11 @@
  */
 function strLengthNumber(string $number): int
 {
-    $cur = 0;
-    $notJustZeros = false;
-    while (@$number[$cur] != '') {
-        if ($number[$cur] >= 0 && $number[$cur] <= 9) {
-            if ($cur == 0 && $number[$cur] > 0) {
-                $notJustZeros = true;
-            }
-            $cur++;
-        } else {
-            throw new Exception('An invalid character was found');
-        }
-    }
-
-    if ($notJustZeros === false) {
+    if (preg_match('/^[1-9]+\d*$/', $number) !== 1) {
         throw new Exception('The number must be positive');
     }
 
-    return $cur;
+    return strlen($number);
 }
 
 /**
@@ -49,25 +36,14 @@ function stringSum(string $numFirst, string $numSecond): string
 {
     $numFirstLength = strLengthNumber($numFirst);
     $numSecondLength = strLengthNumber($numSecond);
-
-    if ($numFirstLength > $numSecondLength) {
-        $maxLength = $numFirstLength;
-    } else {
-        $maxLength = $numSecondLength;
-    }
+    $maxLength = max($numFirstLength, $numSecondLength);
 
     $result = '';
     $transfer = 0;
     for ($i = 1; $i <= $maxLength; $i++) {
-        $sum = $transfer;
-        if ($i <= $numFirstLength) {
-            $sum += $numFirst[$numFirstLength - $i];
-        }
-
-        if ($i <= $numSecondLength) {
-            $sum += $numSecond[$numSecondLength - $i];
-        }
-
+        $sum = $transfer
+            + ($i <= $numFirstLength ? $numFirst[$numFirstLength - $i] : 0)
+            + ($i <= $numSecondLength ? $numSecond[$numSecondLength - $i] : 0);
         if ($sum > 9) {
             $transfer = 1;
             $sum -= 10;
